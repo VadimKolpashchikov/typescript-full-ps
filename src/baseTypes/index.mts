@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // Использование типов
 {
   const revenue: number = 1000;

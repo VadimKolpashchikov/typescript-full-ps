@@ -104,5 +104,19 @@
         Roles2[Roles2["USER"] = 2] = "USER";
     })(Roles2 || (Roles2 = {}));
     const adminCode = Roles2.ADMIN;
+    let ReqStates;
+    (function (ReqStates) {
+        ReqStates["PUBLISHED"] = "published";
+        ReqStates["DRAFT"] = "draft";
+        ReqStates["DELETED"] = "deleted";
+    })(ReqStates || (ReqStates = {}));
+    async function getFaqs(req) {
+        const res = await fetch('/faqs', {
+            method: 'POST',
+            body: JSON.stringify(req),
+        });
+        const data = await res.json();
+        return data;
+    }
 }
 export {};

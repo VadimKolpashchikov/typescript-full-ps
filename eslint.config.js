@@ -17,6 +17,12 @@ export default defineConfig([
     files: ['**/*.{ts,mts,cts}'],
   },
   {
+    files: ['src/**/*.{ts,mts,cts}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+    },
+  },
+  {
     files: ['**/*.json'],
     plugins: { json },
     language: 'json/json',
