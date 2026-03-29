@@ -131,3 +131,164 @@
   console.log(user);
 }
 
+// Implements
+{
+  interface ILogger {
+    log(...args: unknown[]): void;
+    error(...args: unknown[]): void;
+  }
+
+  class Logger implements ILogger {
+    log(...args: unknown[]): void {
+      console.log(...args);
+    }
+
+    async error(...args: unknown[]): Promise<void> {
+      console.log(...args);
+      return new Promise(() => {});
+    }
+  }
+
+  interface IPayable {
+    price?: number;
+    pay(paymentId: number): void;
+  }
+
+  interface IDeletable {
+    delete(): void;
+  }
+
+  class User implements IPayable, IDeletable {
+    delete(): void {
+      throw new Error('Method not implemented.');
+    }
+    pay(paymentId: number | string): void {
+      throw new Error('Method not implemented.');
+    }
+  }
+}
+
+// Extends
+{
+  type PaymentStatus = 'new' | 'paid';
+  class Payment {
+    id: number;
+    status: PaymentStatus = 'new';
+
+    constructor(id: number) {
+      this.id = id;
+    }
+
+    pay(): boolean {
+      if (this.status === 'new') {
+        this.status = 'paid';
+        return true;
+      }
+
+      return false;
+    }
+  }
+
+  class PersistedPayment extends Payment {
+    databaseId: number;
+    paidAt: Date;
+
+    constructor() {
+      const id = Math.random();
+      super(id);
+    }
+
+    save(): void {}
+
+    override pay(date?: Date): boolean {
+      const payResult = super.pay();
+
+      if (payResult && date) {
+        this.paidAt = date;
+      }
+
+      return payResult;
+    }
+  }
+
+  class User {
+    name: string = 'user';
+
+    constructor() {
+      console.log(this.name);
+    }
+  }
+
+  class Admin extends User {
+    name: string = 'admin';
+
+    constructor() {
+      super();
+      console.log(this.name);
+    }
+  }
+  const admin = new Admin();
+
+  class HttpError extends Error {
+    code: number;
+
+    constructor(message: string, code: number) {
+      super(message);
+      this.code = code ?? 500;
+    }
+  }
+}
+
+// Extends vs Compositions
+{
+  class User {
+    name: string;
+
+    constructor(name: string) {
+      this.name = name;
+    }
+  }
+
+  // BAD: необходимо переопределять утилитарные методы для работы
+  // class Users extends Array<User> {
+  //   searchByName(name: string): User[] {
+  //     return this.filter((user) => user.name === name);
+  //   }
+
+  //   override toString(): string {
+  //     return this.map((user) => user.name).join(', ');
+  //   }
+  // }
+
+  // const users = new Users();
+  // users.push(new User('John'));
+  // users.push(new User('John2'));
+  // console.log(users.toString());
+
+  class UserList {
+    users: User[] = [];
+
+    push(user: User): number {
+      this.users.push(user);
+      return this.users.length;
+    }
+  }
+
+  class Payment {
+    date: Date;
+  }
+  // // BAD: Нарушение доменной области
+  // class UserWithPayments extends Payment {
+  //   name: string;
+  // }
+
+  class UserWithPayments2 {
+    user: User;
+    payment: Payment;
+
+    constructor(user: User, payment: Payment) {
+      this.user = user;
+      this.payment = payment;
+    }
+  }
+}

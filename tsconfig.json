@@ -1,6 +1,6 @@
 {
   "exclude": [
-    "hw/2-typings"
+    "hw/*"
   ],
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
@@ -10,7 +10,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
-    "target": "esnext",
+    "target": "es2015",
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],
