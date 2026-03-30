@@ -292,3 +292,46 @@
     }
   }
 }
+
+// Visibility of properties and methods
+{
+  class Vehicle {
+    public make: string;
+
+    private damages: string[] = [];
+    private _model: string;
+    #price: number;
+
+    protected run: number;
+
+    set model(value: string) {
+      this._model = value;
+    }
+
+    get model(): string {
+      return this._model;
+    }
+
+    get price(): number {
+      return this.#price;
+    }
+
+    isPriceEqual(v: Vehicle): boolean {
+      return this.#price === v.#price;
+    }
+
+    addDamage(damage: string): void {
+      this.damages.push(damage);
+    }
+  }
+
+  new Vehicle().make = '213';
+
+  class EroTrack extends Vehicle {
+    setRun(km: number): void {
+      this.run = km / 0.621371;
+    }
+  }
+
+  new Vehicle().isPriceEqual(new EroTrack());
+}
