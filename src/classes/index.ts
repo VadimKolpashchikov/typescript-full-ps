@@ -335,3 +335,100 @@
 
   new Vehicle().isPriceEqual(new EroTrack());
 }
+
+// Cart Class
+{
+  class Product {
+    constructor(
+      public id: number,
+      public name: string,
+      public price: number,
+    ) {}
+  }
+
+  class Delivery {
+    constructor(public data: Date) {}
+  }
+
+  class HomeDelivery extends Delivery {
+    constructor(
+      data: Date,
+      public address: string,
+    ) {
+      super(data);
+    }
+  }
+
+  class PointDelivery extends Delivery {
+    constructor(public pointId: number) {
+      super(new Date());
+    }
+  }
+
+  type DeliveryOptions = HomeDelivery | PointDelivery;
+
+  type CartStatus = {
+    message: string;
+    status: boolean;
+  };
+  class Cart {
+    private products: Product[] = [];
+    private delivery: DeliveryOptions;
+
+    public addProduct(product: Product): void {
+      this.products.push(product);
+    }
+
+    public removeProduct({ id }: Product): void {
+      this.products = this.products.filter((product) => product.id !== id);
+    }
+
+    public getTotalPrice(): number {
+      return this.products.reduce((acc, product) => acc + product.price, 0);
+    }
+
+    public setDelivery(delivery: DeliveryOptions) {
+      this.delivery = delivery;
+    }
+
+    public checkout(): CartStatus {
+      let message: string = '';
+
+      if (!this.products.length) {
+        message = 'Нет товаров в корзине';
+      } else if (!this.delivery) {
+        message = 'Не указан способ доставки';
+      }
+
+      return {
+        message,
+        status: !message,
+      };
+    }
+  }
+}
+
+// Static
+{
+  class UserService {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private static db: any;
+
+    static async getUser(id: number) {
+      return UserService.db.find();
+    }
+
+    createUser(): void {
+      UserService.getUser(1231);
+    }
+
+    static {
+      UserService.db =
+        'присваиваю сразу при обработке кода, не могу быть асинхронным';
+    }
+  }
+
+  UserService.getUser(1);
+
+  new UserService().createUser();
+}
