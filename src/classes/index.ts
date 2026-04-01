@@ -428,7 +428,78 @@
     }
   }
 
-  UserService.getUser(1);
+  // UserService.getUser(1);
 
-  new UserService().createUser();
+  // new UserService().createUser();
+}
+
+// this
+{
+  class Payment {
+    private date: Date = new Date();
+
+    getDate(this: Payment): Date {
+      return this.date;
+    }
+
+    getDateArrow = () => {
+      return this.date;
+    };
+  }
+
+  const payment = new Payment();
+  console.log(payment.getDate());
+
+  const user = {
+    id: 1,
+    paymentDate: payment.getDate,
+    paymentDateRight: payment.getDate.bind(payment),
+    paymentDateArrow: payment.getDateArrow,
+  };
+
+  // user.paymentDate(); // undefined
+  user.paymentDateRight(); // 2023-01-01T00:00:00.000Z
+  user.paymentDateArrow(); // 2023-01-01T00:00:00.000Z
+
+  class Payment2 extends Payment {
+    save() {
+      return super.getDate();
+    }
+
+    saveArrow() {
+      // return super.getDateArrow(); не будет в прототипе, только через this доступно
+    }
+  }
+
+  console.log(new Payment2().save());
+  console.log(new Payment2().save());
+
+  class UserBuilder {
+    name: string;
+
+    setName(name: string): this {
+      this.name = name;
+      return this;
+    }
+
+    // чтобы классы отличались должно быть хотя бы одно свойство добавлено в наследованный класс
+    isAdmin(): this is AdminBuilder {
+      return this instanceof AdminBuilder;
+    }
+  }
+
+  class AdminBuilder extends UserBuilder {
+    roles: string[] = [];
+  }
+
+  const userBuilder = new UserBuilder().setName('John');
+  const adminBuilder = new AdminBuilder().setName('John2');
+
+  const userOrAdmin: UserBuilder | AdminBuilder = new UserBuilder();
+
+  if (userOrAdmin.isAdmin()) {
+    console.log(userOrAdmin); // AdminBuilder
+  } else {
+    console.log(userOrAdmin); // UserBuilder
+  }
 }
