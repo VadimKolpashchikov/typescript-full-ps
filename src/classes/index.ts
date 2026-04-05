@@ -503,3 +503,50 @@
     console.log(userOrAdmin); // UserBuilder
   }
 }
+
+// Abstract class
+{
+  abstract class Controller {
+    abstract handle(req: unknown): void;
+
+    handleWithLogs(req: unknown): void {
+      console.log('Start');
+      this.handle(req);
+      console.log('End');
+    }
+  }
+
+  class UserController extends Controller {
+    handle(req: unknown): void {
+      console.log(req);
+    }
+  }
+
+  // new Controller() // error
+  const c = new UserController();
+  c.handleWithLogs('Request');
+}
+
+// Abstract Logger test
+{
+  abstract class Logger {
+    abstract log(message: string): void;
+
+    printDate(date: Date = new Date()): void {
+      this.log(date.toString());
+    }
+  }
+
+  class ConsoleLogger extends Logger {
+    log(message: string): void {
+      console.log(message);
+    }
+
+    logWithDate(message: string): void {
+      this.printDate();
+      this.log(message);
+    }
+  }
+
+  new ConsoleLogger().logWithDate('123');
+}
