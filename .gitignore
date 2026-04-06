@@ -1,5 +1,2 @@
 /node_modules
-/src/**/*.js
-/src/**/*.mjs
-/hw/**/*.js
-/hw/**/*.mjs
+/dist
