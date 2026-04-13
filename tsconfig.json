@@ -4,13 +4,13 @@
   // ],
   // "extends": "../../tsconfig.json",
   "exclude": [
-    "hw/2-*",
-    "hw/4-*",
+    "src/hw/2-*",
+    "src/hw/4-*",
   ],
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    // "rootDir": "./src",
+    "rootDir": "./src",
     "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
@@ -22,7 +22,7 @@
     // "types": ["node"],
     // and npm install -D @types/node
     // Other Outputs
-    // "sourceMap": true,
+    "sourceMap": true,
     // "declaration": true,
     // "declarationMap": true,
     // Stricter Typechecking Options
@@ -46,6 +46,7 @@
     "removeComments": true,
     "strictPropertyInitialization": false,
     "noEmitOnError": true,
+    // "importsNotUsedAsValues": "remove",
     //
     // JavaScript Support
     // "allowJs": true,
