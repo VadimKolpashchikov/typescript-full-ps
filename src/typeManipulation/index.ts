@@ -121,3 +121,157 @@
 
   type RoleTypes = (typeof roles)[number];
 }
+
+// Conditional Types
+{
+  const a1: number = Math.random() > 0.5 ? 1 : 0;
+
+  interface HTTPResponse<T extends 'success' | 'error'> {
+    code: number;
+    data: T extends 'success' ? string : Error;
+    additionalData?: T extends 'success' ? string : number;
+  }
+
+  const err: HTTPResponse<'error'> = {
+    code: 0,
+    data: new Error('error'),
+  };
+
+  const err2: HTTPResponse<'success'> = {
+    code: 0,
+    data: '',
+  };
+
+  class User {
+    id: number;
+    name: string;
+  }
+
+  class UserPersistence extends User {
+    dbUuid: string;
+  }
+
+  function getUser(id: number): User;
+  function getUser(dbUuid: number): UserPersistence;
+  function getUser(dbUuidOrId: string | number): User | UserPersistence {
+    if (typeof dbUuidOrId === 'number') {
+      return new User();
+    }
+
+    return new UserPersistence();
+  }
+
+  type UserOrUserPersistence<T extends string | number> = T extends number
+    ? User
+    : UserPersistence;
+
+  function getUser2<T extends string | number>(
+    id: T,
+  ): UserOrUserPersistence<T> {
+    if (typeof id === 'number') {
+      return new User() as UserOrUserPersistence<T>;
+    }
+
+    return new UserPersistence() as UserOrUserPersistence<T>;
+  }
+
+  const res1 = getUser2(1);
+  const res2 = getUser2('1');
+}
+
+// Infer
+{
+  function runTransaction(transaction: { fromTo: [string, string] }) {
+    console.log(123);
+  }
+
+  type GetFirstArg<T> = T extends (arg1: infer First, ...args: any[]) => any
+    ? First
+    : never;
+
+  const transaction: GetFirstArg<typeof runTransaction> = {
+    fromTo: ['1', '2'],
+  };
+
+  runTransaction(transaction);
+}
+
+// Mapped Types
+{
+  enum Modifier {
+    READ = 'read',
+    UPDATE = 'update',
+    CREATE = 'create',
+  }
+
+  type UserRoles = {
+    customers: Modifier;
+    projects?: Modifier;
+    adminPanel?: Modifier;
+  };
+
+  type ModifierToAccess<Type> = {
+    +readonly [Property in keyof Type]-?: boolean;
+  };
+
+  type ModifierToAccessAndRename<Type> = {
+    +readonly [Property in keyof Type as `canAccess${Capitalize<string & Property>}`]+?: boolean;
+  };
+
+  type UserAccess2 = ModifierToAccess<UserRoles>;
+  type UserAccessRenamed = ModifierToAccessAndRename<UserRoles>;
+
+  type UserAccess1 = {
+    customers?: boolean;
+    projects?: boolean;
+    adminPanel?: boolean;
+  };
+
+  interface IForm {
+    name: string;
+    password: string;
+  }
+
+  const form: IForm = {
+    name: 'John',
+    password: '123',
+  };
+
+  type FormValidation<T> = {
+    [Key in keyof T]:
+      | {
+          isValid: true;
+        }
+      | {
+          isValid: false;
+          errorMessage: string;
+        };
+  };
+
+  const formValidation: FormValidation<IForm> = {
+    name: { isValid: true },
+    password: { isValid: false, errorMessage: 'Password is required' },
+  };
+}
+
+// Template Literal Types
+{
+  type ReadOrWrite = 'read' | 'write';
+  type Bulk = 'bulk' | '';
+
+  type Access = `can${Capitalize<ReadOrWrite>}${Capitalize<Bulk>}`;
+
+  type ReadOrWriteBulk<T> = T extends `can${infer R}` ? R : never;
+
+  const t: ReadOrWriteBulk<Access> = 'Read';
+
+  type ErrorOrSuccess = 'success' | 'error';
+
+  interface IResponse {
+    result: `http-${ErrorOrSuccess}`;
+  }
+
+  const res: IResponse = {
+    result: 'http-success',
+  };
+}
