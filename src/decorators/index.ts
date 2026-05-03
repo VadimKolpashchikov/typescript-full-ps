@@ -127,4 +127,106 @@
 
 // Method decorators
 {
+  interface IUserService {
+    usersCount: number;
+    getUsersCount(): number;
+  }
+
+  class UserService implements IUserService {
+    usersCount: number = 1000;
+
+    // @Log
+    @Catch({ rethrow: false })
+    getUsersCount(): number {
+      throw new Error('Ошибочка!');
+    }
+  }
+
+  function Log<This, Args extends any[], Return extends number>(
+    target: (this: This, ...args: Args) => Return,
+    context: ClassMethodDecoratorContext<
+      This,
+      (this: This, ...args: Args) => Return
+    >,
+  ): (this: This, ...args: Args) => number {
+    console.log(context.name);
+
+    return function (this: This, ...args: Args) {
+      return 123;
+    };
+  }
+
+  function Catch(
+    { rethrow }: { rethrow: boolean } = { rethrow: false },
+  ): Function {
+    return function <This, Args extends any[], Return>(
+      target: (this: This, ...args: Args) => Return,
+      context: ClassMethodDecoratorContext<
+        This,
+        (this: This, ...args: Args) => Return
+      >,
+    ): (this: This, ...args: Args) => Return | undefined | void {
+      return function (this: This, ...args: Args) {
+        try {
+          return target.apply(this, args);
+        } catch (e) {
+          if (e instanceof Error) {
+            console.log('Опа, ошибочка из декоратора: ' + e.message);
+
+            if (rethrow) {
+              throw e;
+            }
+          }
+        }
+      };
+    };
+  }
+
+  console.log(new UserService().getUsersCount());
+}
+
+// Property decorators
+{
+  interface IUserService {
+    usersCount: number;
+    getUsersCount(): number;
+  }
+
+  class UserService implements IUserService {
+    @Max(100)
+    accessor usersCount: number = 0;
+
+    getUsersCount(): number {
+      return this.usersCount;
+    }
+  }
+
+  function Max(max: number) {
+    return function <This, Value extends number>(
+      target: ClassAccessorDecoratorTarget<This, Value>,
+      context: ClassAccessorDecoratorContext<This, Value>,
+    ): ClassAccessorDecoratorResult<This, Value> {
+      return {
+        get(this: This): Value {
+          console.log(`Чтение свойства ${String(context.name)}`);
+          return target.get.call(this);
+        },
+        set(this: This, value: Value) {
+          if (value > max) {
+            console.log(
+              `Нельзя установить значение больше ${max}. Установлено: ${max}`,
+            );
+            target.set.call(this, max as Value);
+          } else {
+            target.set.call(this, value);
+          }
+        },
+      };
+    };
+  }
+  const service = new UserService();
+  service.usersCount = 1000;
+  console.log(service.usersCount);
+  service.usersCount = 10;
+  console.log(service.usersCount);
 }
