@@ -262,6 +262,8 @@
 {
   @ClassDec
   class Demo {
+    @fieldDec
+    name: string = 'Test';
     // @MethodDec
     @Max(10)
     exec(a: number) {
@@ -291,7 +293,9 @@
         (this: This, ...args: Args) => Return
       >,
     ) {
+      console.log('Method Dec');
       return function (this: This, ...args: Args): Return {
+        console.log('Method Dec function');
         if (args[0] > num) {
           throw new Error(`Значение не может быть больше ${num}`);
         }
@@ -305,8 +309,21 @@
   function ClassDec<This, Args extends any[]>(
     target: new (...args: Args) => This,
     context: ClassDecoratorContext<new (...args: Args) => This>,
-  ) {}
+  ) {
+    console.log('Class Dec');
+  }
+
+  function fieldDec<This>(
+    target: undefined,
+    context: ClassFieldDecoratorContext<This, string>,
+  ) {
+    console.log('Field Dec');
+    return function (value: string) {
+      console.log('Field Dec function');
+      return value;
+    };
+  }
 
   const demo = new Demo();
-  demo.exec(123);
+  demo.exec(1);
 }
