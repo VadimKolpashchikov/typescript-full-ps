@@ -138,6 +138,7 @@
   }
 
   const resp = new Resp<string, number>('data', 0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   resp.error;
 
   class HttpResp<F> extends Resp<string, number> {

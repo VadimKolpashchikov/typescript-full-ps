@@ -68,7 +68,7 @@
     console.log(strOrNum);
   }
 
-  let strOrNum2: typeof strOrNum = '123';
+  const strOrNum2: typeof strOrNum = '123';
 
   const user = {
     name: 'John',

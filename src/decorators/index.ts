@@ -47,6 +47,7 @@
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   function nullUser(target: Function) {
     target.prototype.usersCount = 0;
   }
@@ -80,6 +81,7 @@
   }
 
   function setUser(count: number) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     return (target: Function) => {
       target.prototype.usersCount = count;
     };
@@ -158,6 +160,7 @@
 
   function Catch(
     { rethrow }: { rethrow: boolean } = { rethrow: false },
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   ): Function {
     return function <This, Args extends any[], Return>(
       target: (this: This, ...args: Args) => Return,
