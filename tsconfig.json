@@ -6,6 +6,7 @@
   "exclude": [
     "src/hw/2-*",
     "src/hw/4-*",
+    "src/hw/10-*",
   ],
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
