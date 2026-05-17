@@ -16,7 +16,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
-    "target": "es2015",
+    "target": "es2017",
     "types": [],
     // For nodejs:
     "lib": [

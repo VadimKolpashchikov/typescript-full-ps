@@ -1,4 +1,4 @@
-class RequestGenerator {
+export class RequestGenerator {
   private method: string = 'GET';
   private url: string = '';
   private body: Record<string, any> = {};
@@ -32,7 +32,7 @@ class RequestGenerator {
   public exec(): Promise<Response> {
     return fetch(this.url, {
       method: this.method,
-      body: JSON.stringify(this.body),
+      body: this.method === 'GET' ? null : JSON.stringify(this.body),
       headers: this.headers,
     });
   }
