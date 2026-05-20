@@ -60,3 +60,106 @@
 
   console.log(auth.handle({ userId: 1, body: {} }));
 }
+
+// Mediator
+{
+  interface IMediator {
+    notify(senderName: string, event: string): void;
+  }
+
+  abstract class Mediated {
+    protected mediator: IMediator;
+    setMediator(mediator: IMediator) {
+      this.mediator = mediator;
+    }
+  }
+
+  class Notifications {
+    send() {
+      console.log('Отправляю уведомление');
+    }
+  }
+
+  class Log {
+    log(message: string) {
+      console.log(message);
+    }
+  }
+
+  class EventHandler extends Mediated {
+    myEvent() {
+      this.mediator.notify('EventHandler', 'myEvent');
+    }
+  }
+
+  class NotificationsMediator implements IMediator {
+    constructor(
+      public notifications: Notifications,
+      public logger: Log,
+      public eventHandler: EventHandler,
+    ) {}
+
+    notify(senderName: string, event: string): void {
+      switch (event) {
+        case 'myEvent':
+          this.notifications.send();
+          this.logger.log('Sended');
+          break;
+      }
+    }
+  }
+
+  const handler = new EventHandler();
+  const logger = new Log();
+  const notifications = new Notifications();
+
+  const med = new NotificationsMediator(notifications, logger, handler);
+  handler.setMediator(med);
+
+  handler.myEvent();
+}
+
+// Strategy
+{
+  class User {
+    githubToken: string;
+    jwtToken: string;
+  }
+
+  interface IAuthStrategy {
+    auth(user: User): boolean;
+  }
+
+  class AuthUser {
+    constructor(private strategy: IAuthStrategy) {}
+
+    setStrategy(strategy: IAuthStrategy) {
+      this.strategy = strategy;
+    }
+
+    public authUser(user: User): boolean {
+      return this.strategy.auth(user);
+    }
+  }
+
+  class JWTStrategy implements IAuthStrategy {
+    auth(user: User): boolean {
+      return !!user.jwtToken;
+    }
+  }
+
+  class GitHubStrategy implements IAuthStrategy {
+    auth(user: User): boolean {
+      return !!user.githubToken && typeof user.githubToken === 'string';
+    }
+  }
+
+  const user = new User();
+  user.githubToken = '123';
+  user.jwtToken = '123';
+
+  const auth = new AuthUser(new JWTStrategy());
+  auth.authUser(user);
+  auth.setStrategy(new GitHubStrategy());
+  auth.authUser(user);
+}
