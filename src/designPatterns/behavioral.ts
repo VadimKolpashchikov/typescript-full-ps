@@ -163,3 +163,67 @@
   auth.setStrategy(new GitHubStrategy());
   auth.authUser(user);
 }
+
+// Observer
+{
+  interface ISubject {
+    attach(observer: IObserver): void;
+    detach(observer: IObserver): void;
+    notify(reason: string): void;
+  }
+  interface IObserver {
+    update(subject: ISubject, reason: string): void;
+  }
+
+  class Lead {
+    constructor(
+      public name: string,
+      public phone: string,
+    ) {}
+  }
+
+  class NewLead implements ISubject {
+    private observers: IObserver[] = [];
+    public state: Lead;
+
+    attach(observer: IObserver): void {
+      if (this.observers.includes(observer)) {
+        return;
+      }
+
+      this.observers.push(observer);
+    }
+    detach(observer: IObserver): void {
+      this.observers = this.observers.filter((o) => o !== observer);
+    }
+    notify(reason: string = ''): void {
+      for (const observer of this.observers) {
+        observer.update(this, reason);
+      }
+    }
+  }
+
+  class NotificationService implements IObserver {
+    update(subject: ISubject, reason: string): void {
+      console.log(`NotificationService received notice ${reason}`);
+      console.log(subject);
+    }
+  }
+
+  class LeadService implements IObserver {
+    update(subject: ISubject, reason: string): void {
+      console.log(`LeadService received notice ${reason}`);
+      console.log(subject);
+    }
+  }
+
+  const subject = new NewLead();
+  subject.state = new Lead('Vad', '123132321');
+
+  const s1 = new NotificationService();
+  const s2 = new LeadService();
+
+  subject.attach(s1);
+  subject.attach(s2);
+  subject.notify('What?');
+}
